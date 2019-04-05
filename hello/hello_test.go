@@ -12,6 +12,13 @@ func TestGetDefaultGreeting(t *testing.T) {
 	}
 }
 
+func TestGetDefaultName(t *testing.T) {
+	result := getDefaultName()
+	if result != "World" {
+		t.Error("Got the wrong default name")
+	}
+}
+
 func Example_main_NoArguments() {
 	os.Args = []string{""}
 	main()
