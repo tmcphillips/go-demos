@@ -4,26 +4,18 @@ import (
 	"fmt"
 )
 
-func SequenceSource(valueArray []int, valueChannel chan int) {
-	for _, value := range valueArray {
-		valueChannel <- value
-	}
-	close(valueChannel)
-}
-
 func ExampleMultiplier() {
 
-	chans := make([]chan int, 2)
+	in := make(chan int, 5)
+	out := make(chan int, 5)
+	go Multiplier(in, out, 2)
 
-	chans[0] = make(chan int)
-	chans[1] = make(chan int)
+	for _, value := range []int{1, 2, 3, 4, 5} {
+		in <- value
+	}
+	close(in)
 
-	ch1 := chans[0] //make(chan int)
-	ch2 := chans[1] // make(chan int)
-	go SequenceSource([]int{1, 2, 3, 4, 5}, ch1)
-	go Multiplier(ch1, ch2, 2)
-
-	for n := range ch2 {
+	for n := range out {
 		fmt.Println(n)
 	}
 
