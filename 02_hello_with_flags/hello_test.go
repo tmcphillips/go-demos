@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -20,15 +21,29 @@ func TestGetDefaultName(t *testing.T) {
 }
 
 func Example_main_NoArguments() {
-	os.Args = []string{""}
+	os.Args = strings.Fields("hello")
 	main()
 	// Output:
 	// Hello World
 }
 
-func Example_main_OneArgument() {
-	os.Args = []string{"", "-name", "Tim"}
+func Example_main_NameOption() {
+	os.Args = strings.Fields("hello -name Tim")
 	main()
 	// Output:
 	// Hello Tim
+}
+
+func Example_main_GreetingOption() {
+	os.Args = strings.Fields("hello -greeting Goodbye")
+	main()
+	// Output:
+	// Goodbye World
+}
+
+func Example_main_NameAndGreetingOptions() {
+	os.Args = strings.Fields("hello -name Tim -greeting Goodbye")
+	main()
+	// Output:
+	// Goodbye Tim
 }
