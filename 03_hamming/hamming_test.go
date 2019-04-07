@@ -2,17 +2,22 @@ package hamming
 
 import (
 	"fmt"
+	"sync"
 )
 
 func ExamplePrinter() {
 
-	in := make(chan int, 1)
-	go Printer(in)
+	var waitgroup sync.WaitGroup
+	waitgroup.Add(1)
+
+	in := make(chan int, 5)
+	go Printer(in, &waitgroup)
 
 	for _, value := range []int{1, 2, 3, 4, 5} {
 		in <- value
 	}
 	close(in)
+	waitgroup.Wait()
 
 	// Output:
 	// 1
@@ -24,9 +29,12 @@ func ExamplePrinter() {
 
 func ExampleMultiplier() {
 
+	var waitgroup sync.WaitGroup
+	waitgroup.Add(1)
+
 	in := make(chan int, 5)
 	out := make(chan int, 5)
-	go Multiplier(in, out, 2)
+	go Multiplier(in, out, 2, &waitgroup)
 
 	for _, value := range []int{1, 2, 3, 4, 5} {
 		in <- value
@@ -36,6 +44,8 @@ func ExampleMultiplier() {
 	for n := range out {
 		fmt.Println(n)
 	}
+
+	waitgroup.Wait()
 
 	// Output:
 	// 2

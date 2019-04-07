@@ -1,8 +1,12 @@
 package hamming
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
-func Multiplier(inputs chan int, outputs chan int, factor int) {
+func Multiplier(inputs chan int, outputs chan int, factor int, waitgroup *sync.WaitGroup) {
+	defer waitgroup.Done()
 	for n := range inputs {
 		product := n * factor
 		outputs <- product
@@ -10,7 +14,8 @@ func Multiplier(inputs chan int, outputs chan int, factor int) {
 	close(outputs)
 }
 
-func Printer(inputs chan int) {
+func Printer(inputs chan int, waitgroup *sync.WaitGroup) {
+	defer waitgroup.Done()
 	for n := range inputs {
 		fmt.Println(n)
 	}
