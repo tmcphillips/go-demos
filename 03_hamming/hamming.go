@@ -59,7 +59,7 @@ func IntegerPrinter(inputs <-chan int, waitgroup *sync.WaitGroup) {
 }
 
 // IntegerStreamMerge is actor that merges two, ordered integer streams
-func IntegerStreamMerge(inputA <-chan int, inputB <-chan int, waitgroup *sync.WaitGroup) {
+func IntegerStreamMerge(inputA <-chan int, inputB <-chan int, outputC chan<- int, waitgroup *sync.WaitGroup) {
 
 	defer waitgroup.Done()
 
@@ -67,18 +67,20 @@ func IntegerStreamMerge(inputA <-chan int, inputB <-chan int, waitgroup *sync.Wa
 	var aOpen, bOpen bool
 
 	for {
-
 		a, aOpen = <-inputA
 		if aOpen {
-			fmt.Println("a:", a)
+			// fmt.Println("a:", a)
+			outputC <- a
 		}
 
 		b, bOpen = <-inputB
 		if bOpen {
-			fmt.Println("b:", b)
+			// fmt.Println("b:", b)
+			outputC <- b
 		}
 
 		if !aOpen && !bOpen {
+			close(outputC)
 			break
 		}
 

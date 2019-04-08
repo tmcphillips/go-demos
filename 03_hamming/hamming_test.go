@@ -125,8 +125,9 @@ func ExampleIntegerStreamMerge() {
 
 	aInputs := make(chan int, 5)
 	bInputs := make(chan int, 5)
+	cOutputs := make(chan int, 100)
 
-	go IntegerStreamMerge(aInputs, bInputs, &waitgroup)
+	go IntegerStreamMerge(aInputs, bInputs, cOutputs, &waitgroup)
 
 	for _, value := range []int{1, 3, 5, 7, 9} {
 		aInputs <- value
@@ -138,15 +139,19 @@ func ExampleIntegerStreamMerge() {
 
 	waitgroup.Wait()
 
+	for n := range cOutputs {
+		fmt.Println(n)
+	}
+
 	// Output:
-	// a: 1
-	// b: 2
-	// a: 3
-	// b: 4
-	// a: 5
-	// b: 6
-	// a: 7
-	// b: 8
-	// a: 9
-	// b: 10
+	// 1
+	// 2
+	// 3
+	// 4
+	// 5
+	// 6
+	// 7
+	// 8
+	// 9
+	// 10
 }
