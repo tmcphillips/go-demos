@@ -1,8 +1,10 @@
 package hamming
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
+	"testing"
 )
 
 func ExampleIntegerDistributor() {
@@ -154,4 +156,37 @@ func ExampleIntegerStreamMerge() {
 	// 8
 	// 9
 	// 10
+}
+
+func TestIntegerStreamMerge_Marshall(t *testing.T) {
+
+	var waitgroup sync.WaitGroup
+	waitgroup.Add(1)
+
+	aInputs := make(chan int, 5)
+	bInputs := make(chan int, 5)
+	cOutputs := make(chan int, 100)
+
+	go IntegerStreamMerge(aInputs, bInputs, cOutputs, &waitgroup)
+
+	for _, value := range []int{1, 3, 5, 7, 9} {
+		aInputs <- value
+		bInputs <- value + 1
+	}
+
+	close(aInputs)
+	close(bInputs)
+
+	waitgroup.Wait()
+
+	var cSlice []int
+	for c := range cOutputs {
+		cSlice = append(cSlice, c)
+	}
+
+	result, _ := json.Marshal(cSlice)
+	expected, _ := json.Marshal([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+	if string(result) != string(expected) {
+		t.Error(string(result))
+	}
 }
