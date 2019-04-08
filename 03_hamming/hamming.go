@@ -6,7 +6,7 @@ import (
 )
 
 // IntegerDistributor is an actor that outputs its integer inputs on each provided output channel.
-func IntegerDistributor(inputs chan int, outputChannels []chan int, waitgroup *sync.WaitGroup) {
+func IntegerDistributor(inputs <-chan int, outputChannels []chan int, waitgroup *sync.WaitGroup) {
 
 	defer waitgroup.Done()
 
@@ -22,7 +22,7 @@ func IntegerDistributor(inputs chan int, outputChannels []chan int, waitgroup *s
 }
 
 // LowPassIntegerFilter is an actor that outputs its integer inputs if they are below or equal to a configurable maximum.
-func LowPassIntegerFilter(inputs chan int, outputs chan int, maximum int, waitgroup *sync.WaitGroup) {
+func LowPassIntegerFilter(inputs <-chan int, outputs chan<- int, maximum int, waitgroup *sync.WaitGroup) {
 
 	defer waitgroup.Done()
 
@@ -36,7 +36,7 @@ func LowPassIntegerFilter(inputs chan int, outputs chan int, maximum int, waitgr
 }
 
 // IntegerMultiplier is an actor that outputs its integer inputs multiplied by a configurable constant factor.
-func IntegerMultiplier(inputs chan int, outputs chan int, factor int, waitgroup *sync.WaitGroup) {
+func IntegerMultiplier(inputs <-chan int, outputs chan<- int, factor int, waitgroup *sync.WaitGroup) {
 
 	defer waitgroup.Done()
 
@@ -49,11 +49,38 @@ func IntegerMultiplier(inputs chan int, outputs chan int, factor int, waitgroup 
 }
 
 // IntegerPrinter is an actor that writes input integers to standard output.
-func IntegerPrinter(inputs chan int, waitgroup *sync.WaitGroup) {
+func IntegerPrinter(inputs <-chan int, waitgroup *sync.WaitGroup) {
 
 	defer waitgroup.Done()
 
 	for n := range inputs {
 		fmt.Println(n)
+	}
+}
+
+// IntegerStreamMerge is actor that merges two, ordered integer streams
+func IntegerStreamMerge(inputA <-chan int, inputB <-chan int, waitgroup *sync.WaitGroup) {
+
+	defer waitgroup.Done()
+
+	var a, b int
+	var aOpen, bOpen bool
+
+	for {
+
+		a, aOpen = <-inputA
+		if aOpen {
+			fmt.Println("a:", a)
+		}
+
+		b, bOpen = <-inputB
+		if bOpen {
+			fmt.Println("b:", b)
+		}
+
+		if !aOpen && !bOpen {
+			break
+		}
+
 	}
 }

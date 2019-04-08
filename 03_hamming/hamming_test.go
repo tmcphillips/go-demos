@@ -117,3 +117,36 @@ func ExampleIntegerPrinter() {
 	// 4
 	// 5
 }
+
+func ExampleIntegerStreamMerge() {
+
+	var waitgroup sync.WaitGroup
+	waitgroup.Add(1)
+
+	aInputs := make(chan int, 5)
+	bInputs := make(chan int, 5)
+
+	go IntegerStreamMerge(aInputs, bInputs, &waitgroup)
+
+	for _, value := range []int{1, 3, 5, 7, 9} {
+		aInputs <- value
+		bInputs <- value + 1
+	}
+
+	close(aInputs)
+	close(bInputs)
+
+	waitgroup.Wait()
+
+	// Output:
+	// a: 1
+	// b: 2
+	// a: 3
+	// b: 4
+	// a: 5
+	// b: 6
+	// a: 7
+	// b: 8
+	// a: 9
+	// b: 10
+}
