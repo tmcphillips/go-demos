@@ -5,6 +5,40 @@ import (
 	"sync"
 )
 
+func ExampleIntegerDistributor() {
+
+	var waitgroup sync.WaitGroup
+	waitgroup.Add(1)
+
+	in := make(chan int, 5)
+	out := []chan int{
+		make(chan int, 5),
+		make(chan int, 5),
+	}
+
+	go IntegerDistributor(in, out, &waitgroup)
+
+	for _, value := range []int{1, 2, 3} {
+		in <- value
+	}
+	close(in)
+
+	for _, o := range out {
+		for n := range o {
+			fmt.Println(n)
+		}
+	}
+
+	waitgroup.Wait()
+
+	// Output:
+	// 1
+	// 2
+	// 3
+	// 1
+	// 2
+	// 3
+}
 func ExampleLowPassIntegerFilter() {
 
 	var waitgroup sync.WaitGroup
