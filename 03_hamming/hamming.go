@@ -64,9 +64,10 @@ func IntegerStreamMerge(inputA <-chan int, inputB <-chan int, outputC chan<- int
 	defer waitgroup.Done()
 
 	var a, b int
-	var aOpen, bOpen bool
+	aOpen, bOpen := true, true
 
-	for {
+	for aOpen || bOpen {
+
 		a, aOpen = <-inputA
 		if aOpen {
 			// fmt.Println("a:", a)
@@ -78,11 +79,7 @@ func IntegerStreamMerge(inputA <-chan int, inputB <-chan int, outputC chan<- int
 			// fmt.Println("b:", b)
 			outputC <- b
 		}
-
-		if !aOpen && !bOpen {
-			close(outputC)
-			break
-		}
-
 	}
+
+	close(outputC)
 }
