@@ -193,12 +193,19 @@ func checkExpectedSlice(expected []int, actual []int) string {
 func TestIntegerStreamMerge_Marshall(t *testing.T) {
 
 	var table = []struct {
-		aValues  []int
-		bValues  []int
-		expected []int
+		description string
+		aValues     []int
+		bValues     []int
+		expected    []int
 	}{
-		{[]int{}, []int{}, []int{}},
-		{[]int{1, 3, 5, 7, 9}, []int{2, 4, 6, 8, 10}, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+		{"Both input channels empty",
+			[]int{},
+			[]int{},
+			[]int{}},
+		{"Equal input sizes with alternating values",
+			[]int{1, 3, 5, 7, 9},
+			[]int{2, 4, 6, 8, 10},
+			[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
 	}
 
 	for i, entry := range table {
@@ -217,7 +224,7 @@ func TestIntegerStreamMerge_Marshall(t *testing.T) {
 			newSliceFromChannel(outChannelC))
 
 		if checkResult != "" {
-			t.Error("[ Entry", i, "]", checkResult)
+			t.Error("[ Entry", i, "-", entry.description, "]", checkResult)
 		}
 	}
 }
