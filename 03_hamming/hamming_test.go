@@ -158,35 +158,54 @@ func ExampleIntegerStreamMerge() {
 	// 10
 }
 
+func newChannelFromSlice(values []int) <-chan int {
+	channel := make(chan int, len(values))
+	for _, value := range values {
+		channel <- value
+	}
+	close(channel)
+	return channel
+}
+
+func newSliceFromChannel(channel <-chan int) []int {
+	size := len(channel)
+	var values = make([]int, size)
+	for i := 0; i < size; i++ {
+		values[i] = <-channel
+	}
+	return values
+}
+
+func checkExpectedSlice(expected []int, actual []int) string {
+	actualJSON, _ := json.Marshal(actual)
+	expectedJSON, _ := json.Marshal(expected)
+
+	actualString := string(actualJSON)
+	expectedString := string(expectedJSON)
+
+	if actualString == expectedString {
+		return ""
+	}
+
+	return fmt.Sprintf("\nExpect: %s\nActual: %s", expectedString, actualString)
+}
+
 func TestIntegerStreamMerge_Marshall(t *testing.T) {
+
+	inChannelA := newChannelFromSlice([]int{1, 3, 5, 7, 9})
+	inChannelB := newChannelFromSlice([]int{2, 4, 6, 8, 10})
+	outChannelC := make(chan int, len(inChannelA)+len(inChannelB))
 
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(1)
-
-	aInputs := make(chan int, 5)
-	bInputs := make(chan int, 5)
-	cOutputs := make(chan int, 100)
-
-	go IntegerStreamMerge(aInputs, bInputs, cOutputs, &waitgroup)
-
-	for _, value := range []int{1, 3, 5, 7, 9} {
-		aInputs <- value
-		bInputs <- value + 1
-	}
-
-	close(aInputs)
-	close(bInputs)
-
+	go IntegerStreamMerge(inChannelA, inChannelB, outChannelC, &waitgroup)
 	waitgroup.Wait()
 
-	var cSlice []int
-	for c := range cOutputs {
-		cSlice = append(cSlice, c)
-	}
+	checkResult := checkExpectedSlice(
+		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		newSliceFromChannel(outChannelC))
 
-	result, _ := json.Marshal(cSlice)
-	expected, _ := json.Marshal([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
-	if string(result) != string(expected) {
-		t.Error(string(result))
+	if checkResult != "" {
+		t.Error(string(checkResult))
 	}
 }
