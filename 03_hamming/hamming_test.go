@@ -192,20 +192,31 @@ func checkExpectedSlice(expected []int, actual []int) string {
 
 func TestIntegerStreamMerge_Marshall(t *testing.T) {
 
-	inChannelA := newChannelFromSlice([]int{1, 3, 5, 7, 9})
-	inChannelB := newChannelFromSlice([]int{2, 4, 6, 8, 10})
-	outChannelC := make(chan int, len(inChannelA)+len(inChannelB))
+	var table = []struct {
+		aValues  []int
+		bValues  []int
+		expected []int
+	}{
+		{[]int{1, 3, 5, 7, 9}, []int{2, 4, 6, 8, 10}, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+	}
 
-	var waitgroup sync.WaitGroup
-	waitgroup.Add(1)
-	go IntegerStreamMerge(inChannelA, inChannelB, outChannelC, &waitgroup)
-	waitgroup.Wait()
+	for i, entry := range table {
 
-	checkResult := checkExpectedSlice(
-		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-		newSliceFromChannel(outChannelC))
+		inChannelA := newChannelFromSlice(entry.aValues)
+		inChannelB := newChannelFromSlice(entry.bValues)
+		outChannelC := make(chan int, len(inChannelA)+len(inChannelB))
 
-	if checkResult != "" {
-		t.Error(string(checkResult))
+		var waitgroup sync.WaitGroup
+		waitgroup.Add(1)
+		go IntegerStreamMerge(inChannelA, inChannelB, outChannelC, &waitgroup)
+		waitgroup.Wait()
+
+		checkResult := checkExpectedSlice(
+			entry.expected,
+			newSliceFromChannel(outChannelC))
+
+		if checkResult != "" {
+			t.Error("[ Entry", i, "]", checkResult)
+		}
 	}
 }
