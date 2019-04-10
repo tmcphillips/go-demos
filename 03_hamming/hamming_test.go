@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
 	"sync"
 	"testing"
 )
@@ -250,10 +252,8 @@ func TestIntegerStreamMerge_Marshall(t *testing.T) {
 	}
 }
 
-func Example_main() {
-
+func Example_main_DefaultMax() {
 	main()
-
 	// Output:
 	// 1
 	// 2
@@ -264,4 +264,49 @@ func Example_main() {
 	// 8
 	// 9
 	// 10
+	// 12
+	// 15
+	// 16
+	// 18
+	// 20
+}
+
+func Example_main_Max5() {
+	os.Args = strings.Fields("hamming -max 5")
+	main()
+	// Output:
+	// 1
+	// 2
+	// 3
+	// 4
+	// 5
+}
+
+func Example_main_Max25() {
+	os.Args = strings.Fields("hamming -max 25")
+	main()
+	// Output:
+	// 1
+	// 2
+	// 3
+	// 4
+	// 5
+	// 6
+	// 8
+	// 9
+	// 10
+	// 12
+	// 15
+	// 16
+	// 18
+	// 20
+	// 24
+	// 25
+}
+
+func Example_main_BadMaxOption() {
+	os.Args = strings.Fields("hamming -max foo")
+	main()
+	// Output:
+	// Could not convert max value to integer: strconv.Atoi: parsing "foo": invalid syntax
 }

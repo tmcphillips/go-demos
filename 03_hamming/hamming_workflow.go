@@ -1,12 +1,26 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"os"
+	"strconv"
 	"sync"
 )
 
+const defaultMaxValue = "20"
+
 func main() {
 
-	const maxValue int = 10
+	var commandLine = flag.NewFlagSet("", 0)
+	var maxValueOption = commandLine.String("max", defaultMaxValue, "Maximum Hamming number to generate")
+	commandLine.Parse(os.Args[1:])
+
+	maxValue, err := strconv.Atoi(*maxValueOption)
+	if err != nil {
+		fmt.Println("Could not convert max value to integer:", err)
+		return
+	}
 	const channelSize = 100
 
 	var waitgroup sync.WaitGroup
