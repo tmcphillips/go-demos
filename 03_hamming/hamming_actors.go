@@ -1,4 +1,4 @@
-package hamming
+package main
 
 import (
 	"fmt"
@@ -29,10 +29,15 @@ func LowPassIntegerFilter(inputs <-chan int, outputs chan<- int, maximum int, wa
 	for n := range inputs {
 		if n <= maximum {
 			outputs <- n
+		} else {
+			break
 		}
 	}
 
 	close(outputs)
+
+	for range inputs {
+	}
 }
 
 // IntegerMultiplier is an actor that outputs its integer inputs multiplied by a configurable constant factor.

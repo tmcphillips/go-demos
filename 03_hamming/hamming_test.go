@@ -1,4 +1,4 @@
-package hamming
+package main
 
 import (
 	"encoding/json"
@@ -41,6 +41,7 @@ func ExampleIntegerDistributor() {
 	// 2
 	// 3
 }
+
 func ExampleLowPassIntegerFilter() {
 
 	var waitgroup sync.WaitGroup
@@ -51,7 +52,7 @@ func ExampleLowPassIntegerFilter() {
 
 	go LowPassIntegerFilter(in, out, 5, &waitgroup)
 
-	for _, value := range []int{1, 7, 2, 6, 19, 3, 6, 7, 4, 9, 5} {
+	for _, value := range []int{1, 2, 3, 4, 5, 6, 7, 8} {
 		in <- value
 	}
 	close(in)
@@ -247,4 +248,20 @@ func TestIntegerStreamMerge_Marshall(t *testing.T) {
 			t.Error("[ Entry", i, "-", entry.description, "]", checkResult)
 		}
 	}
+}
+
+func Example_main() {
+
+	main()
+
+	// Output:
+	// 1
+	// 2
+	// 3
+	// 4
+	// 5
+	// 6
+	// 8
+	// 9
+	// 10
 }
