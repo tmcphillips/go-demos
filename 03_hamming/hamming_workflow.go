@@ -8,12 +8,13 @@ import (
 	"sync"
 )
 
-const defaultMaxValue = "20"
+const defaultMaxOption = "20"
 
+// Generates all of the Hamming numbers up to a maximum value.
 func main() {
 
 	var commandLine = flag.NewFlagSet("", 0)
-	var maxValueOption = commandLine.String("max", defaultMaxValue, "Maximum Hamming number to generate")
+	var maxValueOption = commandLine.String("max", defaultMaxOption, "Maximum Hamming number to generate")
 	commandLine.Parse(os.Args[1:])
 
 	maxValue, err := strconv.Atoi(*maxValueOption)
@@ -21,10 +22,8 @@ func main() {
 		fmt.Println("Could not convert max value to integer:", err)
 		return
 	}
-	const channelSize = 100
 
-	var waitgroup sync.WaitGroup
-	waitgroup.Add(8)
+	const channelSize = 100
 
 	valuesToMultiplyBy2 := make(chan int, channelSize)
 	valuesToMultiplyBy3 := make(chan int, channelSize)
@@ -36,6 +35,9 @@ func main() {
 	merged2x3x5xValues := make(chan int, channelSize)
 	filteredValues := make(chan int, channelSize)
 	valuesToPrint := make(chan int, channelSize)
+
+	var waitgroup sync.WaitGroup
+	waitgroup.Add(8)
 
 	go IntegerMultiplier(valuesToMultiplyBy2, multipliedBy2Values, 2, &waitgroup)
 	go IntegerMultiplier(valuesToMultiplyBy3, multipliedBy3Values, 3, &waitgroup)
