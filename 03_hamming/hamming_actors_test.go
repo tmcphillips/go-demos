@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"strings"
 	"sync"
 	"testing"
 )
@@ -123,44 +121,6 @@ func ExampleIntegerPrinter() {
 	// 5
 }
 
-// func ExampleIntegerStreamMerge() {
-
-// 	var waitgroup sync.WaitGroup
-// 	waitgroup.Add(1)
-
-// 	aInputs := make(chan int, 5)
-// 	bInputs := make(chan int, 5)
-// 	cOutputs := make(chan int, 100)
-
-// 	go IntegerStreamMerge(aInputs, bInputs, cOutputs, &waitgroup)
-
-// 	for _, value := range []int{1, 3, 5, 7, 9} {
-// 		aInputs <- value
-// 		bInputs <- value + 1
-// 	}
-
-// 	close(aInputs)
-// 	close(bInputs)
-
-// 	waitgroup.Wait()
-
-// 	for n := range cOutputs {
-// 		fmt.Println(n)
-// 	}
-
-// Output:
-// 1
-// 2
-// 3
-// 4
-// 5
-// 6
-// 7
-// 8
-// 9
-// 10
-// }
-
 func newChannelFromSlice(values []int) <-chan int {
 	channel := make(chan int, len(values))
 	for _, value := range values {
@@ -250,63 +210,4 @@ func TestIntegerStreamMerge(t *testing.T) {
 			t.Error("[ Entry", i, "-", entry.description, "]", checkResult)
 		}
 	}
-}
-
-func Example_main_DefaultMax() {
-	os.Args = []string{"hamming"}
-	main()
-	// Output:
-	// 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20
-}
-
-func Example_main_Max5() {
-	os.Args = strings.Fields("hamming -max 5")
-	main()
-	// Output:
-	// 1, 2, 3, 4, 5
-}
-
-func Example_main_Max25() {
-	os.Args = strings.Fields("hamming -max 25")
-	main()
-	// Output:
-	// 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25
-}
-
-func Example_main_BadMaxOption() {
-	os.Args = strings.Fields("hamming -max foo")
-	main()
-	// Output:
-	// Could not convert max value to integer: strconv.Atoi: parsing "foo": invalid syntax
-}
-
-func Example_main_Max5_CommaSeparated() {
-	os.Args = strings.Fields("hamming -max 5 -sep ,")
-	main()
-	// Output:
-	// 1,2,3,4,5
-}
-
-func Example_main_Max5_NewlineSeparated() {
-	os.Args = strings.Fields("hamming -max 5 -sep \\n")
-	main()
-	// Output:
-	// 1
-	// 2
-	// 3
-	// 4
-	// 5
-}
-
-func Example_main_Max5_CommaTwoSpaceSeparated() {
-	os.Args = []string{"hamming", "-max", "5", "-sep", ",  "}
-	main()
-	// Output:
-	// 1,  2,  3,  4,  5
-}
-
-func Example_main_MaxOptionWithNoValue() {
-	os.Args = []string{"hamming", "-max"}
-	main()
-	// Output:
 }
