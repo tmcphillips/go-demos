@@ -253,6 +253,7 @@ func TestIntegerStreamMerge(t *testing.T) {
 }
 
 func Example_main_DefaultMax() {
+	os.Args = []string{"hamming"}
 	main()
 	// Output:
 	// 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20
@@ -302,4 +303,10 @@ func Example_main_Max5_CommaTwoSpaceSeparated() {
 	main()
 	// Output:
 	// 1,  2,  3,  4,  5
+}
+
+func Example_main_MaxOptionWithNoValue() {
+	os.Args = []string{"hamming", "-max"}
+	main()
+	// Output:
 }

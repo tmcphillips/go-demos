@@ -18,7 +18,9 @@ func main() {
 	var commandLine = flag.NewFlagSet("", 0)
 	var maxValueOption = commandLine.String("max", defaultMaxValueOption, "Maximum Hamming number to generate")
 	var separatorOption = commandLine.String("sep", defaultSeparatorOption, "Separator between successive Hamming numbers")
-	commandLine.Parse(os.Args[1:])
+	if err := commandLine.Parse(os.Args[1:]); err != nil {
+		return
+	}
 
 	maxValue, err := strconv.Atoi(*maxValueOption)
 	if err != nil {
