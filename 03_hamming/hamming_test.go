@@ -107,7 +107,7 @@ func ExampleIntegerPrinter() {
 	waitgroup.Add(1)
 
 	in := make(chan int, 5)
-	go IntegerPrinter(in, &waitgroup)
+	go IntegerPrinter(in, "\n", &waitgroup)
 
 	for _, value := range []int{1, 2, 3, 4, 5} {
 		in <- value
@@ -123,43 +123,43 @@ func ExampleIntegerPrinter() {
 	// 5
 }
 
-func ExampleIntegerStreamMerge() {
+// func ExampleIntegerStreamMerge() {
 
-	var waitgroup sync.WaitGroup
-	waitgroup.Add(1)
+// 	var waitgroup sync.WaitGroup
+// 	waitgroup.Add(1)
 
-	aInputs := make(chan int, 5)
-	bInputs := make(chan int, 5)
-	cOutputs := make(chan int, 100)
+// 	aInputs := make(chan int, 5)
+// 	bInputs := make(chan int, 5)
+// 	cOutputs := make(chan int, 100)
 
-	go IntegerStreamMerge(aInputs, bInputs, cOutputs, &waitgroup)
+// 	go IntegerStreamMerge(aInputs, bInputs, cOutputs, &waitgroup)
 
-	for _, value := range []int{1, 3, 5, 7, 9} {
-		aInputs <- value
-		bInputs <- value + 1
-	}
+// 	for _, value := range []int{1, 3, 5, 7, 9} {
+// 		aInputs <- value
+// 		bInputs <- value + 1
+// 	}
 
-	close(aInputs)
-	close(bInputs)
+// 	close(aInputs)
+// 	close(bInputs)
 
-	waitgroup.Wait()
+// 	waitgroup.Wait()
 
-	for n := range cOutputs {
-		fmt.Println(n)
-	}
+// 	for n := range cOutputs {
+// 		fmt.Println(n)
+// 	}
 
-	// Output:
-	// 1
-	// 2
-	// 3
-	// 4
-	// 5
-	// 6
-	// 7
-	// 8
-	// 9
-	// 10
-}
+// Output:
+// 1
+// 2
+// 3
+// 4
+// 5
+// 6
+// 7
+// 8
+// 9
+// 10
+// }
 
 func newChannelFromSlice(values []int) <-chan int {
 	channel := make(chan int, len(values))
@@ -193,7 +193,7 @@ func checkExpectedSlice(expected []int, actual []int) string {
 	return fmt.Sprintf("\nExpect: %s\nActual: %s", expectedString, actualString)
 }
 
-func TestIntegerStreamMerge_Marshall(t *testing.T) {
+func TestIntegerStreamMerge(t *testing.T) {
 
 	var table = []struct {
 		description string
@@ -255,53 +255,21 @@ func TestIntegerStreamMerge_Marshall(t *testing.T) {
 func Example_main_DefaultMax() {
 	main()
 	// Output:
-	// 1
-	// 2
-	// 3
-	// 4
-	// 5
-	// 6
-	// 8
-	// 9
-	// 10
-	// 12
-	// 15
-	// 16
-	// 18
-	// 20
+	// 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20
 }
 
 func Example_main_Max5() {
 	os.Args = strings.Fields("hamming -max 5")
 	main()
 	// Output:
-	// 1
-	// 2
-	// 3
-	// 4
-	// 5
+	// 1, 2, 3, 4, 5
 }
 
 func Example_main_Max25() {
 	os.Args = strings.Fields("hamming -max 25")
 	main()
 	// Output:
-	// 1
-	// 2
-	// 3
-	// 4
-	// 5
-	// 6
-	// 8
-	// 9
-	// 10
-	// 12
-	// 15
-	// 16
-	// 18
-	// 20
-	// 24
-	// 25
+	// 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25
 }
 
 func Example_main_BadMaxOption() {
@@ -309,4 +277,29 @@ func Example_main_BadMaxOption() {
 	main()
 	// Output:
 	// Could not convert max value to integer: strconv.Atoi: parsing "foo": invalid syntax
+}
+
+func Example_main_Max5_CommaSeparated() {
+	os.Args = strings.Fields("hamming -max 5 -sep ,")
+	main()
+	// Output:
+	// 1,2,3,4,5
+}
+
+func Example_main_Max5_NewlineSeparated() {
+	os.Args = strings.Fields("hamming -max 5 -sep \\n")
+	main()
+	// Output:
+	// 1
+	// 2
+	// 3
+	// 4
+	// 5
+}
+
+func Example_main_Max5_CommaTwoSpaceSeparated() {
+	os.Args = []string{"hamming", "-max", "5", "-sep", ",  "}
+	main()
+	// Output:
+	// 1,  2,  3,  4,  5
 }

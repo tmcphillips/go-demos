@@ -5,16 +5,19 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 )
 
-const defaultMaxOption = "20"
+const defaultMaxValueOption = "20"
+const defaultSeparatorOption = ", "
 
 // Generates all of the Hamming numbers up to a maximum value.
 func main() {
 
 	var commandLine = flag.NewFlagSet("", 0)
-	var maxValueOption = commandLine.String("max", defaultMaxOption, "Maximum Hamming number to generate")
+	var maxValueOption = commandLine.String("max", defaultMaxValueOption, "Maximum Hamming number to generate")
+	var separatorOption = commandLine.String("sep", defaultSeparatorOption, "Separator between successive Hamming numbers")
 	commandLine.Parse(os.Args[1:])
 
 	maxValue, err := strconv.Atoi(*maxValueOption)
@@ -46,7 +49,7 @@ func main() {
 	go IntegerStreamMerge(merged2x3xValues, multipliedBy5Values, merged2x3x5xValues, &waitgroup)
 	go LowPassIntegerFilter(merged2x3x5xValues, filteredValues, maxValue, &waitgroup)
 	go IntegerDistributor(filteredValues, []chan int{valuesToMultiplyBy2, valuesToMultiplyBy3, valuesToMultiplyBy5, valuesToPrint}, &waitgroup)
-	go IntegerPrinter(valuesToPrint, &waitgroup)
+	go IntegerPrinter(valuesToPrint, *separatorOption, &waitgroup)
 
 	filteredValues <- 1
 
@@ -102,12 +105,19 @@ func IntegerMultiplier(inputs <-chan int, outputs chan<- int, factor int, waitgr
 }
 
 // IntegerPrinter is an actor that writes input integers to standard output.
-func IntegerPrinter(inputs <-chan int, waitgroup *sync.WaitGroup) {
+func IntegerPrinter(inputs <-chan int, separator string, waitgroup *sync.WaitGroup) {
+
+	separator = strings.ReplaceAll(separator, "\\n", "\n")
 
 	defer waitgroup.Done()
-
+	first := true
 	for n := range inputs {
-		fmt.Println(n)
+		if first {
+			first = false
+		} else {
+			fmt.Print(separator)
+		}
+		fmt.Print(n)
 	}
 }
 
