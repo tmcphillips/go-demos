@@ -20,14 +20,14 @@ func TestGetDefaultName(t *testing.T) {
 }
 
 func Example_main_NoArguments() {
-	os.Args = []string{""}
+	os.Args = []string{"hello"}
 	main()
 	// Output:
 	// Hello World
 }
 
 func Example_main_OneArgument() {
-	os.Args = []string{"", "Tim"}
+	os.Args = []string{"hello", "Tim"}
 	main()
 	// Output:
 	// Hello Tim
