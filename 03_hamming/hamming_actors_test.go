@@ -1,45 +1,34 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"sync"
 	"testing"
 )
 
-func ExampleIntegerDistributor() {
+func TestIntegerDistributor(t *testing.T) {
+
+	inputValues := []int{1, 2, 3}
+	inChannel := newChannelFromSlice(inputValues)
+	outChannels := []chan int{
+		make(chan int, 5),
+		make(chan int, 5),
+	}
 
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(1)
-
-	in := make(chan int, 5)
-	out := []chan int{
-		make(chan int, 5),
-		make(chan int, 5),
-	}
-
-	go IntegerDistributor(in, out, &waitgroup)
-
-	for _, value := range []int{1, 2, 3} {
-		in <- value
-	}
-	close(in)
-
-	for _, o := range out {
-		for n := range o {
-			fmt.Println(n)
-		}
-	}
-
+	go IntegerDistributor(inChannel, outChannels, &waitgroup)
 	waitgroup.Wait()
 
-	// Output:
-	// 1
-	// 2
-	// 3
-	// 1
-	// 2
-	// 3
+	expectedOutputs := inputValues
+	for i := range []int{0, 1} {
+		diff := compareJSONOfSlices(
+			expectedOutputs,
+			newSliceFromChannel(outChannels[i]))
+		if diff != "" {
+			t.Error("[ Out channel", i, "]", diff)
+		}
+	}
 }
 
 func ExampleLowPassIntegerFilter() {
@@ -121,38 +110,6 @@ func ExampleIntegerPrinter() {
 	// 5
 }
 
-func newChannelFromSlice(values []int) <-chan int {
-	channel := make(chan int, len(values))
-	for _, value := range values {
-		channel <- value
-	}
-	close(channel)
-	return channel
-}
-
-func newSliceFromChannel(channel <-chan int) []int {
-	size := len(channel)
-	var values = make([]int, size)
-	for i := 0; i < size; i++ {
-		values[i] = <-channel
-	}
-	return values
-}
-
-func checkExpectedSlice(expected []int, actual []int) string {
-	actualJSON, _ := json.Marshal(actual)
-	expectedJSON, _ := json.Marshal(expected)
-
-	actualString := string(actualJSON)
-	expectedString := string(expectedJSON)
-
-	if actualString == expectedString {
-		return ""
-	}
-
-	return fmt.Sprintf("\nExpect: %s\nActual: %s", expectedString, actualString)
-}
-
 func TestIntegerStreamMerge(t *testing.T) {
 
 	var table = []struct {
@@ -202,12 +159,12 @@ func TestIntegerStreamMerge(t *testing.T) {
 		go IntegerStreamMerge(inChannelA, inChannelB, outChannelC, &waitgroup)
 		waitgroup.Wait()
 
-		checkResult := checkExpectedSlice(
+		diff := compareJSONOfSlices(
 			entry.expected,
 			newSliceFromChannel(outChannelC))
 
-		if checkResult != "" {
-			t.Error("[ Entry", i, "-", entry.description, "]", checkResult)
+		if diff != "" {
+			t.Error("[ Entry", i, "-", entry.description, "]", diff)
 		}
 	}
 }
