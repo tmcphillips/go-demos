@@ -12,6 +12,11 @@ import (
 const defaultMaxValueOption = "20"
 const defaultSeparatorOption = ", "
 
+// @begin hamming
+// @in max
+// @in separator
+// @out hamming_numbers @file stdout
+
 // Generates all of the Hamming numbers up to a maximum value.
 func main() {
 
@@ -44,14 +49,53 @@ func main() {
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(8)
 
+	// @begin multiply_by_2
+	// @in filteredValues
+	// @out multiples_of_2
 	go IntegerMultiplier(valuesToMultiplyBy2, multipliedBy2Values, 2, &waitgroup)
+	// @end multiply_by_2
+
+	// @begin multiply_by_3
+	// @in filteredValues
+	// @out multiples_of_3
 	go IntegerMultiplier(valuesToMultiplyBy3, multipliedBy3Values, 3, &waitgroup)
+	// @end multiply_by_3
+
+	// @begin multiply_by_5
+	// @in filteredValues
+	// @out multiples_of_5
 	go IntegerMultiplier(valuesToMultiplyBy5, multipliedBy5Values, 5, &waitgroup)
+	// @end multiply_by_5
+
+	// @begin merge_1
+	// @in multiples_of_2
+	// @in multiples_of_3
+	// @out multiples_of_2_and_3
 	go IntegerStreamMerge(multipliedBy2Values, multipliedBy3Values, merged2x3xValues, &waitgroup)
+	// @end merge_1
+
+	// @begin merge_2
+	// @in multiples_of_2_and_3
+	// @in multiples_of_5
+	// @out merged2x3x5Values
 	go IntegerStreamMerge(merged2x3xValues, multipliedBy5Values, merged2x3x5xValues, &waitgroup)
+	// @end merge_2
+
+	// @begin Filter
+	// @in merged2x3x5Values
+	// @param max
+	// @out filteredValues
 	go LowPassIntegerFilter(merged2x3x5xValues, filteredValues, maxValue, &waitgroup)
+	// @end Filter
+
 	go IntegerDistributor(filteredValues, []chan int{valuesToMultiplyBy2, valuesToMultiplyBy3, valuesToMultiplyBy5, valuesToPrint}, &waitgroup)
+
+	// @begin Printer
+	// @in filteredValues
+	// @param separator
+	// @out hamming_numbers  @file stdout
 	go IntegerPrinter(valuesToPrint, *separatorOption, &waitgroup)
+	// @end Printer
 
 	filteredValues <- 1
 
@@ -180,3 +224,5 @@ func IntegerStreamMerge(inputA <-chan int, inputB <-chan int, outputC chan<- int
 
 	close(outputC)
 }
+
+// @end hamming
