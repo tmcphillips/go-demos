@@ -4,7 +4,7 @@
 - The most commonly used way to use Qt with Go is [therecipe/qt](https://github.com/therecipe/qt).
 - Installation instructions for Windows: 
 https://github.com/therecipe/qt/wiki/Installation-on-Windows
-Go version referenced is 1.12.4.
+- Go version referenced is 1.12.4.
 
 ### Upgraded Go to match version in therecipe/qt instructions
 - Version currently installed on circe-win10 is  1.12.1
@@ -57,7 +57,7 @@ Go version referenced is 1.12.4.
     PLAY RECAP *********************************************************************************************************************************************************************************
     127.0.0.1                  : ok=6    changed=2    unreachable=0    failed=0
     ```
-- Confirmed that installed version is no 1.12.4:
+- Confirmed that installed version is now 1.12.4:
 
     ```console
     PS C:\Users\tmcphill\go\src\github.com\therecipe\qt\cmd\qtsetup> go version
@@ -101,7 +101,7 @@ Go version referenced is 1.12.4.
     GOPATH                         C:\Users\tmcphill\go
     ```
 
-### Tried installing therecipe/qt Go package but got errors running qtsetup:
+### Tried installing therecipe/qt Go package but got errors running qtsetup
 
 - Cloned the repo:
 	```console
@@ -322,7 +322,7 @@ Go version referenced is 1.12.4.
 
     ```
     C:\Qt\Qt5.12.3\5.12.3\mingw73_64\bin
-    C:/Qt/Qt5.12.3/Tools/mingw730_64\bin
+    C:\Qt\Qt5.12.3\Tools\mingw730_64\bin
     ```
 - Added the two paths to the system-wide PATH variable and confirmed the executables in that directory are now accessible from a new instance of PowerShell:
 
@@ -340,7 +340,7 @@ Go version referenced is 1.12.4.
 - Noticed that error message running qtsetup above refers to an installation of Qt with a different version and location on disk than what I actually have.  
 	- Error message refers to: `C:\Qt\5.12.0\`
 	- Qt is installed at: `C:\Qt\Qt5.12.3\5.12.3`
-- Found a suggested solution in a GitHub issue:
+- Found a suggested solution in a GitHub issue comment:
    https://github.com/therecipe/qt/issues/492#issuecomment-355209898
 - Following the guidance in the comment to the GitHub issue above, set two system-wide environment variables in System Properties:
     ```
@@ -471,5 +471,5 @@ Go version referenced is 1.12.4.
     time="2019-04-29T19:26:07-07:00" level=info msg="testing widgets\\pixel_editor"
     time="2019-04-29T19:28:31-07:00" level=info msg="testing widgets\\textedit"
     ```
-- All seven of the test application started at the end of the above build appear to be fully functional.
+- All seven of the test applications started at the end of the above build appear to be fully functional.
 
