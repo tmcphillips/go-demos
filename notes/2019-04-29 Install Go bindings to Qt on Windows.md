@@ -101,7 +101,7 @@ Go version referenced is 1.12.4.
     GOPATH                         C:\Users\tmcphill\go
     ```
 
-### Install therecipe/qt Go package:
+### Tried installing therecipe/qt Go package but got errors running qtsetup:
 
 - Cloned the repo:
 	```console
@@ -270,7 +270,7 @@ Go version referenced is 1.12.4.
 	        C:/Users/tmcphill/go/src/github.com/therecipe/qt/cmd/qtsetup/main.go:108 +0x3c8
 	```
 
-- Ran qtsetup.exe again from the MinGW prompt:
+- Ran qtsetup.exe again from the MinGW prompt and still got what appear to be error messages:
 
     ```console
     C:\Qt\Qt5.12.3\5.12.3\mingw73_64>%GOPATH%\bin\qtsetup.exe
@@ -335,3 +335,141 @@ Go version referenced is 1.12.4.
 	compilation terminated.
 	```
 	
+### Successfully ran qtsetup to build and install Qt bindings to Go
+
+- Noticed that error message running qtsetup above refers to an installation of Qt with a different version and location on disk than what I actually have.  
+	- Error message refers to: `C:\Qt\5.12.0\`
+	- Qt is installed at: `C:\Qt\Qt5.12.3\5.12.3`
+- Found a suggested solution in a GitHub issue:
+   https://github.com/therecipe/qt/issues/492#issuecomment-355209898
+- Following the guidance in the comment to the GitHub issue above, set two system-wide environment variables in System Properties:
+    ```
+    QT_DIR = C:\Qt\Qt5.12.3\
+    QT_VERSION = 5.12.3
+    ```
+
+- In new PowerShell instance ran qtsetup again, and this time the various qt components and bindings to Go were compiled and installed successfully:
+
+    ```console
+    PS C:\Users\tmcphill\go\bin> .\qtsetup.exe
+    time="2019-04-29T18:37:37-07:00" level=info msg="successfully created qtenv.bat symlink in your PATH (C:\\Go\\bin\\qtenv.bat)"
+    time="2019-04-29T18:37:37-07:00" level=info msg="running: 'qtsetup prep'"
+    time="2019-04-29T18:37:37-07:00" level=info msg="successfully created qtrcc symlink in your PATH (C:\\Go\\bin\\qtrcc.exe)"
+    time="2019-04-29T18:37:37-07:00" level=info msg="successfully created qtmoc symlink in your PATH (C:\\Go\\bin\\qtmoc.exe)"
+    time="2019-04-29T18:37:37-07:00" level=info msg="successfully created qtminimal symlink in your PATH (C:\\Go\\bin\\qtminimal.exe)"
+    time="2019-04-29T18:37:37-07:00" level=info msg="successfully created qtdeploy symlink in your PATH (C:\\Go\\bin\\qtdeploy.exe)"
+    time="2019-04-29T18:37:37-07:00" level=info msg="running: 'qtsetup check windows' [docker=false] [vagrant=false]"
+    time="2019-04-29T18:37:39-07:00" level=info msg="GOOS:                        'windows'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="GOARCH:                      'amd64'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="GOVERSION:                   'go1.12.4'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="GOROOT:                   *  'C:\\Go\\'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="GOPATH:                   *  'C:\\Users\\tmcphill\\go'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="GOBIN:                       'C:\\Users\\tmcphill\\go\\bin'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="GOMOD:                       ''"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_HASH:                     '746779e4c012d961bc4fad16cfe6228b1b112215'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_API:                      ''"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_VERSION:               *  '5.12.3'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_DIR:                   *  'C:\\Qt\\Qt5.12.3'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_STUB:                     'false'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_DEBUG:                    'false'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_QMAKE_DIR:                ''"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_WEBKIT:                   'false'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_DEBUG_CONSOLE:            'false'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="QT_MSYS2:                    'false'"
+    time="2019-04-29T18:37:39-07:00" level=info msg="running: 'qtsetup generate windows' [docker=false] [vagrant=false]"
+    time="2019-04-29T18:37:40-07:00" level=warning msg=parser.LoadModule error=EOF module=VirtualKeyboard
+    time="2019-04-29T18:37:40-07:00" level=warning msg=parser.LoadModule error=EOF module=ScriptTools
+    time="2019-04-29T18:37:40-07:00" level=warning msg=parser.LoadModule error=EOF module=Script
+    time="2019-04-29T18:37:40-07:00" level=warning msg=parser.LoadModule error=EOF module=Purchasing
+    time="2019-04-29T18:37:44-07:00" level=info msg="generating full qt/core"
+    time="2019-04-29T18:37:58-07:00" level=info msg="generating full qt/androidextras"
+    time="2019-04-29T18:37:59-07:00" level=info msg="generating full qt/gui"
+    time="2019-04-29T18:38:19-07:00" level=info msg="generating full qt/network"
+    time="2019-04-29T18:38:26-07:00" level=info msg="generating full qt/xml"
+    time="2019-04-29T18:38:29-07:00" level=info msg="generating full qt/dbus"
+    time="2019-04-29T18:38:32-07:00" level=info msg="generating full qt/nfc"
+    time="2019-04-29T18:38:35-07:00" level=info msg="generating full qt/script"
+    time="2019-04-29T18:38:36-07:00" level=info msg="generating full qt/sensors"
+    time="2019-04-29T18:38:43-07:00" level=info msg="generating full qt/positioning"
+    time="2019-04-29T18:38:46-07:00" level=info msg="generating full qt/widgets"
+    time="2019-04-29T18:39:36-07:00" level=info msg="generating full qt/sql"
+    time="2019-04-29T18:39:40-07:00" level=info msg="generating full qt/qml"
+    time="2019-04-29T18:39:45-07:00" level=info msg="generating full qt/websockets"
+    time="2019-04-29T18:39:47-07:00" level=info msg="generating full qt/xmlpatterns"
+    time="2019-04-29T18:39:49-07:00" level=info msg="generating full qt/bluetooth"
+    time="2019-04-29T18:39:54-07:00" level=info msg="generating full qt/webchannel"
+    time="2019-04-29T18:39:56-07:00" level=info msg="generating full qt/svg"
+    time="2019-04-29T18:39:58-07:00" level=info msg="generating full qt/multimedia"
+    time="2019-04-29T18:40:16-07:00" level=info msg="generating full qt/quick"
+    time="2019-04-29T18:40:23-07:00" level=info msg="generating full qt/help"
+    time="2019-04-29T18:40:29-07:00" level=info msg="generating full qt/location"
+    time="2019-04-29T18:40:32-07:00" level=info msg="generating full qt/scripttools"
+    time="2019-04-29T18:40:34-07:00" level=info msg="generating full qt/uitools"
+    time="2019-04-29T18:40:36-07:00" level=info msg="generating full qt/winextras"
+    time="2019-04-29T18:40:39-07:00" level=info msg="generating full qt/testlib"
+    time="2019-04-29T18:40:41-07:00" level=info msg="generating full qt/serialport"
+    time="2019-04-29T18:40:52-07:00" level=info msg="generating full qt/serialbus"
+    time="2019-04-29T18:40:55-07:00" level=info msg="generating full qt/printsupport"
+    time="2019-04-29T18:41:00-07:00" level=info msg="generating full qt/designer"
+    time="2019-04-29T18:41:07-07:00" level=info msg="generating full qt/scxml"
+    time="2019-04-29T18:41:11-07:00" level=info msg="generating full qt/gamepad"
+    time="2019-04-29T18:41:14-07:00" level=info msg="generating full qt/purchasing"
+    time="2019-04-29T18:41:15-07:00" level=info msg="generating full qt/datavisualization    [GPLv3]"
+    time="2019-04-29T18:41:17-07:00" level=info msg="generating full qt/charts               [GPLv3]"
+    time="2019-04-29T18:41:18-07:00" level=info msg="generating full qt/virtualkeyboard      [GPLv3]"
+    time="2019-04-29T18:41:20-07:00" level=info msg="generating full qt/speech"
+    time="2019-04-29T18:41:22-07:00" level=info msg="generating full qt/quickcontrols2"
+    time="2019-04-29T18:41:24-07:00" level=info msg="generating full qt/sailfish"
+    time="2019-04-29T18:41:24-07:00" level=info msg="generating full qt/remoteobjects"
+    time="2019-04-29T18:41:27-07:00" level=info msg="running: 'qtsetup install windows' [docker=false] [vagrant=false]"
+    time="2019-04-29T18:41:28-07:00" level=info msg="installing full qt/core"
+    time="2019-04-29T18:44:26-07:00" level=info msg="installing full qt/androidextras"
+    time="2019-04-29T18:44:28-07:00" level=info msg="installing full qt/gui"
+    time="2019-04-29T18:49:52-07:00" level=info msg="installing full qt/network"
+    time="2019-04-29T18:50:45-07:00" level=info msg="installing full qt/xml"
+    time="2019-04-29T18:51:03-07:00" level=info msg="installing full qt/dbus"
+    time="2019-04-29T18:51:21-07:00" level=info msg="installing full qt/nfc"
+    time="2019-04-29T18:51:38-07:00" level=info msg="installing full qt/script"
+    time="2019-04-29T18:51:47-07:00" level=info msg="installing full qt/sensors"
+    time="2019-04-29T18:52:16-07:00" level=info msg="installing full qt/positioning"
+    time="2019-04-29T18:52:35-07:00" level=info msg="installing full qt/widgets"
+    time="2019-04-29T19:02:44-07:00" level=info msg="installing full qt/sql"
+    time="2019-04-29T19:03:12-07:00" level=info msg="installing full qt/qml"
+    time="2019-04-29T19:03:35-07:00" level=info msg="installing full qt/websockets"
+    time="2019-04-29T19:03:52-07:00" level=info msg="installing full qt/xmlpatterns"
+    time="2019-04-29T19:04:09-07:00" level=info msg="installing full qt/bluetooth"
+    time="2019-04-29T19:04:37-07:00" level=info msg="installing full qt/webchannel"
+    time="2019-04-29T19:04:52-07:00" level=info msg="installing full qt/svg"
+    time="2019-04-29T19:05:11-07:00" level=info msg="installing full qt/multimedia"
+    time="2019-04-29T19:07:15-07:00" level=info msg="installing full qt/quick"
+    time="2019-04-29T19:08:00-07:00" level=info msg="installing full qt/help"
+    time="2019-04-29T19:08:38-07:00" level=info msg="installing full qt/location"
+    time="2019-04-29T19:09:02-07:00" level=info msg="installing full qt/scripttools"
+    time="2019-04-29T19:09:15-07:00" level=info msg="installing full qt/uitools"
+    time="2019-04-29T19:09:34-07:00" level=info msg="installing full qt/winextras"
+    time="2019-04-29T19:09:58-07:00" level=info msg="installing full qt/testlib"
+    time="2019-04-29T19:10:17-07:00" level=info msg="installing full qt/serialport"
+    time="2019-04-29T19:10:37-07:00" level=info msg="installing full qt/serialbus"
+    time="2019-04-29T19:11:02-07:00" level=info msg="installing full qt/printsupport"
+    time="2019-04-29T19:11:32-07:00" level=info msg="installing full qt/designer"
+    time="2019-04-29T19:12:10-07:00" level=info msg="installing full qt/scxml"
+    time="2019-04-29T19:12:34-07:00" level=info msg="installing full qt/gamepad"
+    time="2019-04-29T19:12:57-07:00" level=info msg="installing full qt/purchasing"
+    time="2019-04-29T19:13:12-07:00" level=info msg="installing full qt/datavisualization    [GPLv3]"
+    time="2019-04-29T19:13:27-07:00" level=info msg="installing full qt/charts               [GPLv3]"
+    time="2019-04-29T19:13:43-07:00" level=info msg="installing full qt/virtualkeyboard      [GPLv3]"
+    time="2019-04-29T19:13:58-07:00" level=info msg="installing full qt/speech"
+    time="2019-04-29T19:14:22-07:00" level=info msg="installing full qt/quickcontrols2"
+    time="2019-04-29T19:14:40-07:00" level=info msg="installing full qt/sailfish"
+    time="2019-04-29T19:14:44-07:00" level=info msg="installing full qt/remoteobjects"
+    time="2019-04-29T19:15:11-07:00" level=info msg="running: 'qtsetup test windows' [docker=false] [vagrant=false]"
+    time="2019-04-29T19:15:12-07:00" level=info msg="testing qml\\application"
+    time="2019-04-29T19:17:26-07:00" level=info msg="testing qml\\drawer_nav_x"
+    time="2019-04-29T19:20:08-07:00" level=info msg="testing qml\\gallery"
+    time="2019-04-29T19:22:10-07:00" level=info msg="testing quick\\calc"
+    time="2019-04-29T19:24:05-07:00" level=info msg="testing widgets\\line_edits"
+    time="2019-04-29T19:26:07-07:00" level=info msg="testing widgets\\pixel_editor"
+    time="2019-04-29T19:28:31-07:00" level=info msg="testing widgets\\textedit"
+    ```
+- All seven of the test application started at the end of the above build appear to be fully functional.
+
