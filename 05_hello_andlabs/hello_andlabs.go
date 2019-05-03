@@ -1,6 +1,6 @@
 package main
 
-// import _ "github.com/andlabs/ui/winmanifest"
+import _ "github.com/andlabs/ui/winmanifest"
 
 import (
 	"github.com/andlabs/ui"
